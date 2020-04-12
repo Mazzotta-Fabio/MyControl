@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/layout_mouse">
+    <GridLayout
+        android:id="@+id/pulsantiera"
+        android:rowCount="1"
+        android:columnCount="2"
+        android:layout_marginTop="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button
+            android:background="@drawable/tastosinistro"
+            android:id="@+id/tasto_sinistro"
+            android:layout_width="180dp"
+            android:layout_height="80dp" />
+        <Button
+            android:background="@drawable/tastosinistro"
+            android:id="@+id/tasto_destro"
+            android:layout_width="180dp"
+            android:layout_height="80dp" />
+    </GridLayout>
+    <TextView
+        android:clickable="true"
+        android:textColor="#000000"
+        android:background="@drawable/sfondotxt"
+        android:id="@+id/txtMouse"
+        android:layout_marginTop="290dp"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Non Connesso"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        android:gravity="center_vertical"/>
+</LinearLayout>

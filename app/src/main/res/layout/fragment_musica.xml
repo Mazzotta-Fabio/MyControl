@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main_layout_musica">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginTop="20dp">
+        <Button
+            android:id="@+id/muto"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="@drawable/muto" />
+        <Button
+            android:id="@+id/chiudi"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="@drawable/chiudi" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/grid_music"
+        android:layout_width="wrap_content"
+        android:layout_height="280dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/sfondo"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/stop"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/stop"/>
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="30dp"
+            android:columnCount="3"
+            android:rowCount="1">
+            <Button
+                android:layout_marginTop="30dp"
+                android:id="@+id/Vaiindietro"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/sinistra" />
+            <Button
+                android:id="@+id/pausaEsegui"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="45dp"
+                android:background="@drawable/play" />
+            <Button
+                android:layout_marginTop="30dp"
+                android:id="@+id/Vaiavanti"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/destra" />
+        </GridLayout>
+        <Button
+            android:id="@+id/schermointero"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/schermointero" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="40dp"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/Volumebasso"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:background="@drawable/meno" />
+        <Button
+            android:id="@+id/Volumealto"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:background="@drawable/piu" />
+        </LinearLayout>
+</LinearLayout>

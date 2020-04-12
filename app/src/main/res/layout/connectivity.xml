@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:id="@+id/main_container_connectivity">
+
+    <LinearLayout
+        android:id="@+id/container_connectivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/status_connesso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="NON SEI CONNESSO!!"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textSize="25dp"
+            android:gravity="center_horizontal"/>
+        </LinearLayout>
+    <Button
+        android:layout_alignParentBottom="true"
+        android:text="Riprova"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/container_pc">
+        <GridLayout
+            android:background="@drawable/sfondopc"
+            android:layout_marginTop="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:columnCount="4"
+            android:rowCount="1"
+            android:id="@+id/table">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content">
+                <Button
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp"
+                    android:id="@+id/btnSpegni"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:background="@drawable/spegni"/>
+                <TextView
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="5dp"
+                    android:textColor="#000000"
+                    android:text="Spegni"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content">
+                <Button
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp"
+                    android:id="@+id/btnIberna"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:background="@drawable/iberna" />
+                <TextView
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="5dp"
+                    android:textColor="#000000"
+                    android:text="Ibernazione"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content">
+                <Button
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:id="@+id/btnRiavvia"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:background="@drawable/riavvia" />
+                <TextView
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="5dp"
+                    android:textColor="#000000"
+                    android:text="Riavvia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content">
+                <Button
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp"
+                    android:id="@+id/btnDisconnetti"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:background="@drawable/disconnetti"/>
+                <TextView
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="5dp"
+                    android:textColor="#000000"
+                    android:text="Disconnetti"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </GridLayout>
+    <TextView
+        android:textColor="#000000"
+        android:clickable="true"
+        android:background="@drawable/sfondotxt"
+        android:layout_marginTop="220dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Non Connesso"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        android:gravity="center_vertical"
+        android:id="@+id/txtPC"/>
+</LinearLayout>

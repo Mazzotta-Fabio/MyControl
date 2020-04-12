@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/layout_telecomando">
+    <GridLayout
+        android:rowCount="3"
+        android:columnCount="1"
+        android:layout_marginTop="50dp"
+        android:id="@+id/table_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_marginLeft="150dp"
+            android:id="@+id/avanti"
+            android:background="@drawable/frecciainsu"
+            android:layout_width="70dp"
+            android:layout_height="70dp"/>
+        <LinearLayout
+            android:layout_marginTop="50dp">
+            <Button
+                android:layout_marginLeft="50dp"
+                android:id="@+id/sinistra"
+                android:background="@drawable/frecciasinistra"
+                android:layout_width="70dp"
+                android:layout_height="70dp"/>
+            <Button
+                android:layout_marginLeft="150dp"
+                android:id="@+id/destra"
+                android:background="@drawable/frecciadestra"
+                android:layout_width="70dp"
+                android:layout_height="70dp"/>
+        </LinearLayout>
+        <Button
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="150dp"
+            android:id="@+id/indietro"
+            android:background="@drawable/frecciabassa"
+            android:layout_width="70dp"
+            android:layout_height="70dp"/>
+    </GridLayout>
+    <TextView
+        android:textColor="#000000"
+        android:clickable="true"
+        android:background="@drawable/sfondotxt"
+        android:layout_marginTop="60dp"
+        android:id="@+id/txtTelecomando"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Non Connesso"
+        android:textSize="30dp"
+        android:textAlignment="center"
+        android:gravity="center"/>
+</LinearLayout>
