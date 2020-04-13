@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("DEBUG","ho istanziato il file");
             if(!(file.exists())){
                 Log.d("File","esiste");
-                doOperationMaker.writeAnything("ADDRESS fabio-PC");
+                doOperationMaker.writeAnything("ADDRESS 172.20.10.6");
             }
             else{
                 Log.d("FILE","non esiste");
