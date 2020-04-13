@@ -1,5 +1,6 @@
 package com.example.MyControl.command;
 
+import android.content.Context;
 import android.view.MotionEvent;
 import android.view.View;
 import java.io.IOException;
@@ -32,8 +33,8 @@ public class WriteCommand implements Command {
     }
 
     @Override
-    public void executeCommandMouse(View v,MotionEvent e) throws IOException {
-        receiverCommand.writeActionMouse(v,e);
+    public void executeCommandMouse(View v, MotionEvent e, Context context) throws IOException {
+        receiverCommand.writeActionMouse(v,e,context);
     }
 
     @Override

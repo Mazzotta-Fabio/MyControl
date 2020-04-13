@@ -1,5 +1,6 @@
 package com.example.MyControl.command;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.*;
 import java.io.IOException;
@@ -30,8 +31,8 @@ public class InvokerCommand {
         writingAction.executeCommandTastiera(code,capsLock);
     }
 
-    public void pressMouse(View v, MotionEvent event)throws IOException{
-        writingAction.executeCommandMouse(v,event);
+    public void pressMouse(View v, MotionEvent event, Context context)throws IOException{
+        writingAction.executeCommandMouse(v,event,context);
     }
 
     public void pressStartAll(Socket socket)throws IOException{

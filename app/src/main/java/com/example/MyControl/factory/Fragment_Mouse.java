@@ -51,7 +51,7 @@ public class Fragment_Mouse extends Fragment implements View.OnTouchListener,Vie
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         try{
-            invokerCommand.pressMouse(v,event);
+            invokerCommand.pressMouse(v,event,context);
         }
         catch (Exception e){
             if(event.getAction()==MotionEvent.ACTION_DOWN){
@@ -69,7 +69,7 @@ public class Fragment_Mouse extends Fragment implements View.OnTouchListener,Vie
     @Override
     public void onClick(View v) {
         try{
-            invokerCommand.pressMouse(v,null);
+            invokerCommand.pressMouse(v,null,context);
         }
         catch (Exception e){
             AlertDialog.Builder ac = new AlertDialog.Builder(context);

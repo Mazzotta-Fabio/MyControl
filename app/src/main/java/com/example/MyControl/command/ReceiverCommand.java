@@ -3,6 +3,7 @@ package com.example.MyControl.command;
 import android.app.AlertDialog;
 import android.content.*;
 import android.graphics.Point;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.widget.Button;
@@ -148,7 +149,7 @@ public class ReceiverCommand {
     }
 
     //mouse
-    public void writeActionMouse(View v, MotionEvent e)throws IOException{
+    public void writeActionMouse(View v, MotionEvent e,Context context)throws IOException{
         String message="\\";
         Log.d("DEBUGVIEW",v.getClass().getName());
         if(e!=null) {
@@ -158,8 +159,17 @@ public class ReceiverCommand {
             } else {
                 if ((e.getAction() == MotionEvent.ACTION_MOVE)) {
                     Log.d("Debug", "sono in move touch click");
-                    double x = e.getX()/*/width*/;
-                    double y = e.getY()/*/height*/;
+
+                    WindowManager wm=(WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+                    Display display=wm.getDefaultDisplay();
+                    Point point = new Point();
+                    display.getSize(point);
+                    double x = e.getX()/point.x;
+                    double y = e.getY()/point.y;
+                    /*
+                    double x = e.getX();
+                    double y = e.getY();
+                     */
                     message = "mouseMuovi " + x + " " + y + " Muovi";
                 }
             }
