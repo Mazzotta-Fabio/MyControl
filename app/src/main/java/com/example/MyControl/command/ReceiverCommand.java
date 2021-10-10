@@ -17,6 +17,11 @@ import java.net.Socket;
  */
 public class ReceiverCommand {
     private ServiceMediaAdapter serviceMediaAdapter;
+    /* coordinate per mouse*/
+    private double initialTouchX;
+    private double initialTouchY;
+    private double initialX;
+    private double initialY;
 
     public ReceiverCommand(){}
 
@@ -160,17 +165,32 @@ public class ReceiverCommand {
                 if ((e.getAction() == MotionEvent.ACTION_MOVE)) {
                     Log.d("Debug", "sono in move touch click");
 
+                    switch (e.getAction()) {
+                        case (MotionEvent.ACTION_DOWN):
+                            initialX=e.getX();
+                            initialY=e.getY();
+                            initialTouchX = e.getRawX();
+                            initialTouchY = e.getRawY();
+                            break;
+                        case (MotionEvent.ACTION_MOVE):
+                            double x = initialX + (int) (e.getRawX() - initialTouchX);
+                            double y = initialY + (int) (e.getRawY() - initialTouchY);
+                            message = "mouseMuovi " + initialX + " " + x + " " +initialY + " " + y + " Muovi";
+                            break;
+                    }
+                    /*
                     WindowManager wm=(WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
                     Display display=wm.getDefaultDisplay();
                     Point point = new Point();
                     display.getSize(point);
-                    double x = e.getX()/point.x;
-                    double y = e.getY()/point.y;
+                    double x = e.getX()*point.x;
+                    double y = e.getY()*point.y;
+                    int pointerCount = e.getPointerCount();
                     /*
                     double x = e.getX();
                     double y = e.getY();
-                     */
                     message = "mouseMuovi " + x + " " + y + " Muovi";
+                     */
                 }
             }
         }
