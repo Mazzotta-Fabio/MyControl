@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +59,8 @@ public class Fragment_PC_Menu extends Fragment implements View.OnClickListener{
         WriteCommand writeCommand=new WriteCommand(receiverCommand);
         invokerCommand=new InvokerCommand(writeCommand);
         container.setBackgroundColor(Color.WHITE);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         new HelpThreadActivity().execute();
         return rootView;
     }

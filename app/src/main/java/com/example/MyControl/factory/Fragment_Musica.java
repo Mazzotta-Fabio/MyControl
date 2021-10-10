@@ -8,6 +8,7 @@ import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
@@ -56,6 +57,8 @@ public class Fragment_Musica extends Fragment implements View.OnClickListener{
         WriteCommand writeCommand=new WriteCommand(receiverCommand);
         invokerCommand=new InvokerCommand(writeCommand);
         container.setBackgroundColor(Color.DKGRAY);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         new HelpThreadActivity().execute();
         return rootView;
     }

@@ -14,7 +14,7 @@ public class MediaFile implements ServiceMediaFile {
         properties=new Properties();
         outputStream=activity.openFileOutput("config.properties",activity.MODE_PRIVATE);
         inputStream=activity.openFileInput("config.properties");
-        printWriter=new PrintWriter(outputStream,true);
+        printWriter=new PrintWriter(outputStream,false);
     }
 
     @Override

@@ -45,7 +45,7 @@ public class Fragment_Impostazioni extends Fragment {
             imm.hideSoftInputFromWindow(rootView.findViewById(R.id.ipAddress).getWindowToken(),0);
         }
         catch (IOException e){
-            e.printStackTrace();
+         e.printStackTrace();
         }
     }
 }

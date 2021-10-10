@@ -23,11 +23,11 @@
             android:layout_height="80dp" />
     </GridLayout>
     <TextView
-        android:clickable="true"
+        android:clickable="false"
         android:textColor="#000000"
         android:background="@drawable/sfondotxt"
         android:id="@+id/txtMouse"
-        android:layout_marginTop="290dp"
+        android:layout_marginTop="400dp"
         android:layout_alignParentBottom="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

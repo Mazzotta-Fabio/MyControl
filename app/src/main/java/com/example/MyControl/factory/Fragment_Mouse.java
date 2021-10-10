@@ -44,6 +44,8 @@ public class Fragment_Mouse extends Fragment implements View.OnTouchListener,Vie
         ReceiverCommand receiverCommand=new ReceiverCommand();
         WriteCommand writeCommand=new WriteCommand(receiverCommand);
         invokerCommand=new InvokerCommand(writeCommand);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         new HelpThreadActivity().execute();
         return rootView;
     }

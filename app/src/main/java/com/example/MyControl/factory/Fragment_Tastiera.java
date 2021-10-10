@@ -1,5 +1,6 @@
 package com.example.MyControl.factory;
 
+import android.annotation.SuppressLint;
 import android.app.*;
 import android.content.Context;
 import android.graphics.Color;
@@ -14,7 +15,7 @@ import com.example.MyControl.command.WriteCommand;
 import com.example.MyControl.facade.DoOperationMaker;
 import java.io.IOException;
 import java.net.Socket;
-
+@SuppressLint("ValidFragment")
 public class Fragment_Tastiera extends Fragment implements KeyboardView.OnKeyboardActionListener{
     private InvokerCommand invokerCommand;
     private Keyboard keyboard;
@@ -23,7 +24,8 @@ public class Fragment_Tastiera extends Fragment implements KeyboardView.OnKeyboa
     private boolean capsLock;
     private Context context;
     private DoOperationMaker doOperationMakerFile;
-    public Fragment_Tastiera(Context context,DoOperationMaker doOperationMakerFile){
+
+    public Fragment_Tastiera(Context context, DoOperationMaker doOperationMakerFile){
         this.context=context;
         this.doOperationMakerFile=doOperationMakerFile;
         capsLock=false;
@@ -38,13 +40,15 @@ public class Fragment_Tastiera extends Fragment implements KeyboardView.OnKeyboa
         WriteCommand writeCommand=new WriteCommand(receiverCommand);
         invokerCommand=new InvokerCommand(writeCommand);
         keyboardView.setOnKeyboardActionListener(this);
-        new HelpThreadActivity().execute();
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        new HelpThreadActivity().start();
         return keyboardView;
     }
 
-    private class HelpThreadActivity extends AsyncTask<Void,Void,Void> {
+    private class HelpThreadActivity extends Thread {
         @Override
-        protected Void doInBackground(Void... params) {
+        public void run() {
             try {
                 String address = doOperationMakerFile.getTextElaborated("ADDRESS");
                 Socket socket = new Socket(address, 8004);
@@ -55,7 +59,7 @@ public class Fragment_Tastiera extends Fragment implements KeyboardView.OnKeyboa
             catch (IOException e) {
                 e.printStackTrace();
             }
-            return null;
+            //return null;
         }
     }
 
