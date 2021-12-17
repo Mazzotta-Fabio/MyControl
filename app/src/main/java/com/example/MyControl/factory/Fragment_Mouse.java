@@ -1,32 +1,34 @@
-package com.example.MyControl.factory;
+package com.example.mycontrol.factory;
 
-import android.app.*;
+import androidx.fragment.app.*;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.*;
 import android.util.Log;
 import android.view.*;
 import android.widget.TextView;
-import com.example.MyControl.R;
-import com.example.MyControl.command.InvokerCommand;
-import com.example.MyControl.command.ReceiverCommand;
-import com.example.MyControl.command.WriteCommand;
-import com.example.MyControl.facade.DoOperationMaker;
+import com.example.mycontrol.R;
+import com.example.mycontrol.action.ReceiverCommand;
+import com.example.mycontrol.action.ServiceFile;
+import com.example.mycontrol.action.ServiceNetwork;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Fragment_Mouse extends Fragment implements View.OnTouchListener,View.OnClickListener{
     private TextView txtMouse;
-    private InvokerCommand invokerCommand;
-    private DoOperationMaker doOperationMakerFile;
+    private ServiceNetwork serviceNetwork;
+    private ServiceFile serviceFile;
     private Context context;
-    private DoOperationMaker doOperationMaker;
+    private Handler handler;
+    private ReceiverCommand receiverCommand;
 
-    public Fragment_Mouse(Context context,DoOperationMaker doOperationMakerFile){
-        super();
+    public Fragment_Mouse(Context context,ServiceFile serviceFile)throws IOException{
         this.context=context;
-        this.doOperationMakerFile=doOperationMakerFile;
+        this.serviceFile=serviceFile;
     }
 
     @Override
@@ -41,22 +43,27 @@ public class Fragment_Mouse extends Fragment implements View.OnTouchListener,Vie
         txtMouse.setOnClickListener(this);
         rootView.setOnTouchListener(this);
         container.setBackgroundColor(Color.RED);
-        ReceiverCommand receiverCommand=new ReceiverCommand();
-        WriteCommand writeCommand=new WriteCommand(receiverCommand);
-        invokerCommand=new InvokerCommand(writeCommand);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        new HelpThreadActivity().execute();
+        /*
+        utile per gestire i processi in maniera asincrona. qui ne creiamo uno
+        */
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        //permette di inviare messaggi ad thread associato
+        handler = new Handler(Looper.getMainLooper());
+        executor.execute(new HelpThreadActivity());
         return rootView;
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         try{
-            invokerCommand.pressMouse(v,event,context);
+            receiverCommand.writeActionMouse(v,event,context);
         }
         catch (Exception e){
+            Log.d("DEBUG","SONO NELL'ECCEZIONE di fragment mouse");
             if(event.getAction()==MotionEvent.ACTION_DOWN){
+                txtMouse.setText("Non Connesso");
                 AlertDialog.Builder ac = new AlertDialog.Builder(context);
                 ac.setTitle("Errore!");
                 ac.setMessage("Impossibile connettersi al PC!");
@@ -71,7 +78,7 @@ public class Fragment_Mouse extends Fragment implements View.OnTouchListener,Vie
     @Override
     public void onClick(View v) {
         try{
-            invokerCommand.pressMouse(v,null,context);
+            receiverCommand.writeActionMouse(v,null,context);
         }
         catch (Exception e){
             AlertDialog.Builder ac = new AlertDialog.Builder(context);
@@ -83,30 +90,37 @@ public class Fragment_Mouse extends Fragment implements View.OnTouchListener,Vie
         }
     }
 
-    private class HelpThreadActivity extends AsyncTask<Void,String,Void>{
+    private class HelpThreadActivity implements Runnable {
         @Override
-        protected Void doInBackground(Void... params) {
+        public void run() {
             try {
-                String address = doOperationMakerFile.getTextElaborated("ADDRESS");
-                Socket socket=new Socket(address,8004);
-                invokerCommand.pressStartAll(socket);
-                doOperationMaker=new DoOperationMaker(socket);
-                doOperationMaker.startAllOperation();
-                String mess = doOperationMaker.getTextElaborated(null);
-                Log.d("messaggio da inviare", mess);
-                String[] value = new String[2];
-                value[0] = mess;
-                publishProgress(value);
-            }
-            catch (Exception e){
+                Log.d("DEBUG","SONO NEL THREAD MOUSE");
+                serviceNetwork=new ServiceNetwork();
+                String address = serviceFile.readFile("ADDRESS");
+                Socket socket = new Socket(address, 8004);
+                serviceNetwork.setSocket(socket);
+                serviceNetwork.sendLocalAddress();
+                receiverCommand=new ReceiverCommand(serviceNetwork);
+                Log.d("DEBUG", "Sono in FragmentMouse Mi sono connesso " + address);
+                String value = serviceNetwork.readSocket();
+                Log.d("DEBUG", "Messaggio ricevuto" + value);
+                handler.post(new UpdateGui(value));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            return null;
         }
-        @Override
-        protected void onProgressUpdate(String...values){
-            super.onProgressUpdate(values);
-            txtMouse.setText("Connesso con "+values[0]);
+    }
+
+    private class UpdateGui implements Runnable {
+        private String value;
+        UpdateGui(String value) {
+            this.value = value;
+        }
+        public void run() {
+            Log.d("DEBUG","SONO NEL THREAD UPDATE GUI");
+            if(value!=null) {
+                txtMouse.setText("Connesso con " + value);
+            }
         }
     }
 
@@ -114,23 +128,25 @@ public class Fragment_Mouse extends Fragment implements View.OnTouchListener,Vie
     public void onDestroy() {
         super.onDestroy();
         try {
-            if (doOperationMaker != null) {
-                doOperationMaker.finishAllOperation();
+            if (serviceNetwork != null) {
+                serviceNetwork.closeSocketStream();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
+/*
     @Override
     public void onPause() {
         super.onPause();
         try {
-            if (doOperationMaker != null) {
-                doOperationMaker.finishAllOperation();
+            if (serviceNetwork != null) {
+                serviceNetwork.closeSocketStream();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    */
+
 }

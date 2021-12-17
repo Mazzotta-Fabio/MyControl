@@ -1,38 +1,40 @@
-package com.example.MyControl.factory;
+package com.example.mycontrol.factory;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import com.example.MyControl.R;
-import com.example.MyControl.command.InvokerCommand;
-import com.example.MyControl.command.ReceiverCommand;
-import com.example.MyControl.command.WriteCommand;
-import com.example.MyControl.facade.DoOperationMaker;
+import com.example.mycontrol.R;
+import com.example.mycontrol.action.ReceiverCommand;
+import com.example.mycontrol.action.ServiceFile;
+import com.example.mycontrol.action.ServiceNetwork;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Fragment_Musica extends Fragment implements View.OnClickListener{
-    private InvokerCommand invokerCommand;
-    private DoOperationMaker doOperationMaker;
-    private DoOperationMaker doOperationMakerFile;
+    private ServiceFile serviceFile;
+    private ServiceNetwork serviceNetwork;
     private Context context;
+    private ReceiverCommand receiverCommand;
 
-    public Fragment_Musica(Context context,DoOperationMaker doOperationMakerFile){
+    public Fragment_Musica(Context context,ServiceFile serviceFile)throws IOException{
         this.context=context;
-        this.doOperationMakerFile=doOperationMakerFile;
+        this.serviceFile=serviceFile;
+        //serviceNetwork=new ServiceNetwork();
     }
 
     @Override
@@ -44,46 +46,46 @@ public class Fragment_Musica extends Fragment implements View.OnClickListener{
             Button b=(Button)v;
             b.setOnClickListener(this);
         }
-        Display display =getActivity().getWindowManager().getDefaultDisplay();
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        Point point = new Point();
-        display.getSize(point);
-        int screen_Height = point.y;
-        int screen_Width = point.x;
+        WindowMetrics displayMetrics=getActivity().getWindowManager().getCurrentWindowMetrics();
+        int screen_Width=displayMetrics.getBounds().width();
+        int screen_Height=displayMetrics.getBounds().height();
         container.setMinimumWidth(screen_Width);
         container.setMinimumHeight(screen_Height);
-        ReceiverCommand receiverCommand=new ReceiverCommand();
-        WriteCommand writeCommand=new WriteCommand(receiverCommand);
-        invokerCommand=new InvokerCommand(writeCommand);
         container.setBackgroundColor(Color.DKGRAY);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        new HelpThreadActivity().execute();
+          /*
+        utile per gestire i processi in maniera asincrona. qui ne creiamo uno
+        */
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new HelpThreadActivity());
         return rootView;
     }
 
-    private class HelpThreadActivity extends AsyncTask<Void,Void,Void> {
+    private class HelpThreadActivity implements Runnable{
         @Override
-        protected Void doInBackground(Void... params) {
+        public void run(){
             try {
-                String address = doOperationMakerFile.getTextElaborated("ADDRESS");
+                Log.d("DEBUG","SONO NEL THREAD MUSICA");
+                serviceNetwork=new ServiceNetwork();
+                String address = serviceFile.readFile("ADDRESS");
                 Socket socket = new Socket(address, 8004);
-                invokerCommand.pressStartAll(socket);
-                doOperationMaker = new DoOperationMaker(socket);
-                doOperationMaker.startAllOperation();
-                Log.d("DEBUG","mi sono connesso");
+                serviceNetwork.setSocket(socket);
+                serviceNetwork.sendLocalAddress();
+                receiverCommand = new ReceiverCommand(serviceNetwork);
+                Log.d("DEBUG","SONO in fragentMusica mi sono connesso");
+                receiverCommand = new ReceiverCommand(serviceNetwork);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return null;
         }
     }
 
     @Override
     public void onClick(View v) {
         try {
-            invokerCommand.pressWritingActionMusic(v);
+            receiverCommand.writeMediaMusic(v);
         }
         catch (Exception e) {
             AlertDialog.Builder ac = new AlertDialog.Builder(v.getContext());
@@ -98,9 +100,9 @@ public class Fragment_Musica extends Fragment implements View.OnClickListener{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (doOperationMaker != null) {
+        if (serviceNetwork != null) {
             try {
-                doOperationMaker.finishAllOperation();
+                serviceNetwork.closeSocketStream();
             }
             catch (IOException e) {
                 e.printStackTrace();

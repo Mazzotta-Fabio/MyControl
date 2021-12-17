@@ -1,32 +1,32 @@
-package com.example.MyControl.command;
+package com.example.mycontrol.action;
 
 import android.app.AlertDialog;
 import android.content.*;
 import android.graphics.Point;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.widget.Button;
-import com.example.MyControl.R;
-import com.example.MyControl.adapter_pattern.ServiceMediaAdapter;
+import com.example.mycontrol.R;
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * classe Receiver:porta avanti le operazioni richieste per poter essere eseguite
  */
 public class ReceiverCommand {
-    private ServiceMediaAdapter serviceMediaAdapter;
     /* coordinate per mouse*/
     private double initialTouchX;
     private double initialTouchY;
     private double initialX;
     private double initialY;
 
-    public ReceiverCommand(){}
+    private ServiceNetwork serviceNetwork;
+
+    public ReceiverCommand(ServiceNetwork serviceNetwork)throws IOException{
+        this.serviceNetwork=serviceNetwork;
+    }
 
     public void writeMediaPC(View v) {
-        Log.d("SERVICEMEDIAADAPTER",serviceMediaAdapter.toString());
+        Log.d("DEBUG","STO IN WRITEMEDIA PC");
         final String message;
         Button b=(Button) v;
         AlertDialog.Builder alert=new AlertDialog.Builder(v.getContext());
@@ -54,7 +54,7 @@ public class ReceiverCommand {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    serviceMediaAdapter.writeMedia(message);
+                    serviceNetwork.writeSocket(message);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -82,7 +82,7 @@ public class ReceiverCommand {
                 message = "tastiera S Telecomando";
                 break;
         }
-        serviceMediaAdapter.writeMedia(message);
+        serviceNetwork.writeSocket(message);
     }
     //musica
     public void writeMediaMusic(View v)throws IOException{
@@ -118,7 +118,7 @@ public class ReceiverCommand {
                 message="gestioneMDP VAIAVANTI";
                 break;
         }
-        serviceMediaAdapter.writeMedia(message);
+        serviceNetwork.writeSocket(message);
     }
     //tastiera
     public void writeMediaKeyboard(int code,boolean capsLock)throws IOException{
@@ -150,15 +150,15 @@ public class ReceiverCommand {
                 break;
         }
         String message="tastiera " + letter + " SelezioneTasto";
-        serviceMediaAdapter.writeMedia(message);
+        serviceNetwork.writeSocket(message);
     }
 
     //mouse
     public void writeActionMouse(View v, MotionEvent e,Context context)throws IOException{
         String message="\\";
-        Log.d("DEBUGVIEW",v.getClass().getName());
+        Log.d("DEBUG","SONO nel movimento mouse"+v.getClass().getName());
         if(e!=null) {
-            if ((e.getAction() == MotionEvent.ACTION_DOWN)) {
+            if ((e.getAction() == MotionEvent.AXIS_TOUCH_MAJOR)) {
                 Log.d("Debug", "sono in touch click");
                 message = "mouse Click SINISTRO";
             } else {
@@ -166,16 +166,22 @@ public class ReceiverCommand {
                     Log.d("Debug", "sono in move touch click");
 
                     switch (e.getAction()) {
+                        /*
                         case (MotionEvent.ACTION_DOWN):
                             initialX=e.getX();
                             initialY=e.getY();
                             initialTouchX = e.getRawX();
                             initialTouchY = e.getRawY();
                             break;
+                         */
                         case (MotionEvent.ACTION_MOVE):
+                            WindowManager wm=(WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+                            WindowMetrics windowMetrics=wm.getCurrentWindowMetrics();
+                            //Point point = new Point();
+                            //display.getSize(point);
                             double x = initialX + (int) (e.getRawX() - initialTouchX);
                             double y = initialY + (int) (e.getRawY() - initialTouchY);
-                            message = "mouseMuovi " + initialX + " " + x + " " +initialY + " " + y + " Muovi";
+                            message = "mouseMuovi " + (initialX/windowMetrics.getBounds().height())*100 + " " + x + " " + (initialY/windowMetrics.getBounds().width())*100 + " " + y + " Muovi";
                             break;
                     }
                     /*
@@ -206,11 +212,13 @@ public class ReceiverCommand {
             }
         }
         if(!(message.equals("\\"))){
-            serviceMediaAdapter.writeMedia(message);
+            serviceNetwork.writeSocket(message);
         }
     }
 
+/*
     public void setCommunication(Socket socket)throws IOException{
         serviceMediaAdapter=ServiceMediaAdapter.createNetwork(socket);
     }
+*/
 }

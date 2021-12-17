@@ -1,4 +1,4 @@
-package com.example.MyControl.interfaccia_grafica.adapter_view;
+package com.example.mycontrol.adapterview;
 
 import android.content.Context;
 import android.view.View;
@@ -7,11 +7,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.MyControl.R;
-import com.example.MyControl.interfaccia_grafica.model.ItemSlideMenu;
+import com.example.mycontrol.R;
 import java.util.List;
-
-
 
 public class SlidingMenuAdapter extends BaseAdapter {
     private Context context;

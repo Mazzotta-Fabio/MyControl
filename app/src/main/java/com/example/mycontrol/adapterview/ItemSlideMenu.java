@@ -1,6 +1,6 @@
-package com.example.MyControl.interfaccia_grafica.model;
+package com.example.mycontrol.adapterview;
 
-public class ItemSlideMenu  {
+public class ItemSlideMenu {
     private int imgId;
     private String title;
 
@@ -15,5 +15,4 @@ public class ItemSlideMenu  {
     public String getTitle() {
         return title;
     }
-
 }

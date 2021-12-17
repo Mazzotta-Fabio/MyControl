@@ -11,24 +11,27 @@
             android:columnCount="4"
             android:rowCount="1"
             android:id="@+id/table">
+
             <LinearLayout
-                android:orientation="vertical"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content">
+                android:orientation="vertical">
+
                 <Button
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="20dp"
                     android:id="@+id/btnSpegni"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:background="@drawable/spegni"/>
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/spegni" />
+
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="18dp"
                     android:layout_marginTop="5dp"
-                    android:textColor="#000000"
                     android:text="Spegni"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:textColor="#000000" />
             </LinearLayout>
             <LinearLayout
                 android:orientation="vertical"

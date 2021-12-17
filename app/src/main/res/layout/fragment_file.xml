@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/layout_file">
+
+    <TextView
+        android:id="@+id/txtnomefile"
+        android:layout_marginTop="40dp"
+        android:text="Nessun file Caricato"
+        android:textSize="20dp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        />
+
+    <Button
+        android:id="@+id/CaricaFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:height="80dp"
+        android:width="190dp"
+        android:layout_marginTop="40dp"
+        android:text="Carica File"
+        />
+
+    <Button
+        android:id="@+id/InviaFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:height="80dp"
+        android:width="190dp"
+        android:layout_marginTop="40dp"
+        android:text="Invia File"
+        />
+
+    <TextView
+        android:clickable="false"
+        android:textColor="#000000"
+        android:background="@drawable/sfondotxt"
+        android:id="@+id/txtconnessofile"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Non Connesso"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        android:gravity="center_vertical"/>
+
+</LinearLayout>

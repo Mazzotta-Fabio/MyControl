@@ -1,5 +1,6 @@
-package com.example.MyControl.factory;
+package com.example.mycontrol.factory;
 
+import androidx.fragment.app.Fragment;
 import android.app.*;
 import android.content.Context;
 import android.graphics.Color;
@@ -9,39 +10,40 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import com.example.MyControl.R;
-import com.example.MyControl.command.InvokerCommand;
-import com.example.MyControl.command.ReceiverCommand;
-import com.example.MyControl.command.WriteCommand;
-import com.example.MyControl.facade.DoOperationMaker;
+import com.example.mycontrol.R;
+import com.example.mycontrol.action.ReceiverCommand;
+import com.example.mycontrol.action.ServiceFile;
+import com.example.mycontrol.action.ServiceNetwork;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Fragment_Telecomando extends Fragment implements View.OnClickListener{
-    private InvokerCommand invokerCommand;
-    private TextView txtTelecomando;
-    private DoOperationMaker doOperationMaker;
-    private Context context;
-    private DoOperationMaker doOperationMakerFile;
 
-    public Fragment_Telecomando(Context context,DoOperationMaker doOperationMakerFile){
+    private TextView txtTelecomando;
+    private Context context;
+    private ServiceFile serviceFile;
+    private ServiceNetwork serviceNetwork;
+    private ReceiverCommand receiverCommand;
+    private Handler handler;
+
+
+    public Fragment_Telecomando(Context context,ServiceFile serviceFile)throws IOException{
         this.context=context;
-        this.doOperationMakerFile=doOperationMakerFile;
+        this.serviceFile=serviceFile;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        Log.d("DEBUGFILEFRAGMOUSE","sto in fragment telecomando");
+        Log.d("DEBUG","sto in fragment telecomando");
         View rootView=inflater.inflate(R.layout.fragment_telecomando,container,false);
         container=(LinearLayout)rootView.findViewById(R.id.layout_telecomando);
-        Display display=getActivity().getWindowManager().getDefaultDisplay();
-        DisplayMetrics displayMetrics=new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        Point point=new Point();
-        display.getSize(point);
-        int screen_heightY=point.y;
-        int screen_widthX=point.x;
+        WindowMetrics displayMetrics=getActivity().getWindowManager().getCurrentWindowMetrics();
+        int screen_heightY=displayMetrics.getBounds().width();
+        int screen_widthX=displayMetrics.getBounds().height();
         container.setMinimumHeight(screen_heightY);
         container.setMinimumWidth(screen_widthX);
         txtTelecomando=(TextView) rootView.findViewById(R.id.txtTelecomando);
@@ -51,48 +53,57 @@ public class Fragment_Telecomando extends Fragment implements View.OnClickListen
             Button b=(Button)v;
             b.setOnClickListener(this);
         }
-        ReceiverCommand receiverCommand=new ReceiverCommand();
-        WriteCommand writeCommand=new WriteCommand(receiverCommand);
-        invokerCommand=new InvokerCommand(writeCommand);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        new HelpThreadActivity().execute();
-        txtTelecomando.setOnClickListener(this);
+        /*
+        utile per gestire i processi in maniera asincrona. qui ne creiamo uno
+        */
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        //permette di inviare messaggi ad thread associato
+        handler = new Handler(Looper.getMainLooper());
+        executor.execute(new HelpThreadActivity());
         return rootView;
     }
 
-    private class HelpThreadActivity extends AsyncTask<Void,String,Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
+    private class HelpThreadActivity implements Runnable {
+        public void run() {
             try {
-                Log.d("DEBUG","STO NEL THREAD");
-                String address = doOperationMakerFile.getTextElaborated("ADDRESS");
+                Log.d("DEBUG","SONO NEL THREAD TELECOMANDO");
+                serviceNetwork=new ServiceNetwork();
+                String address = serviceFile.readFile("ADDRESS");
                 Socket socket = new Socket(address, 8004);
-                Log.d("DEBUG","Sto agganciato");
-                invokerCommand.pressStartAll(socket);
-                doOperationMaker = new DoOperationMaker(socket);
-                doOperationMaker.startAllOperation();
-                String mess = doOperationMaker.getTextElaborated(null);
-                Log.d("messaggio da inviare", mess);
-                String[] value = new String[2];
-                value[0] = mess;
-                publishProgress(value);
+                serviceNetwork.setSocket(socket);
+                serviceNetwork.sendLocalAddress();
+                Log.d("DEBUG", "sono in fragment Telecomando Sto agganciato");
+                receiverCommand = new ReceiverCommand(serviceNetwork);
+                String value=serviceNetwork.readSocket();
+                handler.post(new UpdateGui(value));
             } catch (IOException e) {
+                Log.d("DEBUG","SONO NELL'ECCEZIONE");
                 e.printStackTrace();
             }
-            return null;
+
+        }
+    }
+
+    private class UpdateGui implements Runnable {
+        private String value;
+        private UpdateGui(String value){
+            this.value=value;
         }
         @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            txtTelecomando.setText("Connesso con "+values[0]);
+        public void run() {
+            Log.d("DEBUG","SONO NEL THREAD UPDATE GUI");
+            if(value!=null){
+                txtTelecomando.setText("Connesso con "+value);
+            }
         }
     }
 
     @Override
     public void onClick(View v) {
         try {
-            invokerCommand.pressWritingActionTelecomando(v);
+            receiverCommand.writeMediaTelecomando(v);
         }
         catch (Exception e) {
             AlertDialog.Builder ac = new AlertDialog.Builder(v.getContext());
@@ -100,6 +111,7 @@ public class Fragment_Telecomando extends Fragment implements View.OnClickListen
             ac.setMessage("Impossibile connettersi al PC!");
             ac.setNeutralButton("Ok", null);
             ac.show();
+            txtTelecomando.setText("Non Connesso");
             e.printStackTrace();
         }
     }
@@ -107,9 +119,9 @@ public class Fragment_Telecomando extends Fragment implements View.OnClickListen
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (doOperationMaker != null) {
+        if (serviceNetwork != null) {
             try {
-                doOperationMaker.finishAllOperation();
+                serviceNetwork.closeSocketStream();
             }
             catch (IOException e) {
                 e.printStackTrace();

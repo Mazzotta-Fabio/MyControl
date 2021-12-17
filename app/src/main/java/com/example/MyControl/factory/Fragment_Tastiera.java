@@ -1,34 +1,39 @@
-package com.example.MyControl.factory;
+package com.example.mycontrol.factory;
 
-import android.annotation.SuppressLint;
+
 import android.app.*;
+import androidx.fragment.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.inputmethodservice.*;
 import android.media.AudioManager;
 import android.os.*;
+import android.util.Log;
 import android.view.*;
-import com.example.MyControl.R;
-import com.example.MyControl.command.InvokerCommand;
-import com.example.MyControl.command.ReceiverCommand;
-import com.example.MyControl.command.WriteCommand;
-import com.example.MyControl.facade.DoOperationMaker;
+import com.example.mycontrol.R;
+import com.example.mycontrol.action.ReceiverCommand;
+import com.example.mycontrol.action.ServiceFile;
+import com.example.mycontrol.action.ServiceNetwork;
+
 import java.io.IOException;
 import java.net.Socket;
-@SuppressLint("ValidFragment")
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class Fragment_Tastiera extends Fragment implements KeyboardView.OnKeyboardActionListener{
-    private InvokerCommand invokerCommand;
     private Keyboard keyboard;
     private KeyboardView keyboardView;
-    private DoOperationMaker doOperationMaker;
     private boolean capsLock;
     private Context context;
-    private DoOperationMaker doOperationMakerFile;
+    private ServiceNetwork serviceNetwork;
+    private ServiceFile serviceFile;
+    private ReceiverCommand receiverCommand;
 
-    public Fragment_Tastiera(Context context, DoOperationMaker doOperationMakerFile){
+    public Fragment_Tastiera(Context context,ServiceFile serviceFile)throws IOException{
         this.context=context;
-        this.doOperationMakerFile=doOperationMakerFile;
+        this.serviceFile=serviceFile;
         capsLock=false;
+        //serviceNetwork=new ServiceNetwork();
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -36,39 +41,43 @@ public class Fragment_Tastiera extends Fragment implements KeyboardView.OnKeyboa
         keyboard=new Keyboard(context,R.xml.qwerty);
         keyboardView.setKeyboard(keyboard);
         container.setBackgroundColor(Color.CYAN);
-        ReceiverCommand receiverCommand=new ReceiverCommand();
-        WriteCommand writeCommand=new WriteCommand(receiverCommand);
-        invokerCommand=new InvokerCommand(writeCommand);
         keyboardView.setOnKeyboardActionListener(this);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        new HelpThreadActivity().start();
+        /*
+        utile per gestire i processi in maniera asincrona. qui ne creiamo uno
+        */
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        //permette di inviare messaggi ad thread associato
+        executor.execute(new HelpThreadActivity());
         return keyboardView;
     }
 
-    private class HelpThreadActivity extends Thread {
+    private class HelpThreadActivity implements Runnable {
         @Override
         public void run() {
             try {
-                String address = doOperationMakerFile.getTextElaborated("ADDRESS");
+                Log.d("DEBUG","SONO NEL THREAD Tastiera");
+                serviceNetwork=new ServiceNetwork();
+                String address = serviceFile.readFile("ADDRESS");
                 Socket socket = new Socket(address, 8004);
-                invokerCommand.pressStartAll(socket);
-                doOperationMaker = new DoOperationMaker(socket);
-                doOperationMaker.startAllOperation();
+                serviceNetwork.setSocket(socket);
+                serviceNetwork.sendLocalAddress();
+                Log.d("DEBUG", "sono in fragment Tastiera Sto agganciato");
+                receiverCommand=new ReceiverCommand(serviceNetwork);
             }
             catch (IOException e) {
                 e.printStackTrace();
             }
-            //return null;
         }
     }
 
     @Override
     public void onDestroy(){
         super.onDestroy();
-        if(doOperationMaker!=null){
+        if(serviceNetwork!=null){
             try{
-                doOperationMaker.finishAllOperation();
+                serviceNetwork.closeSocketStream();
             }
             catch (IOException e){
                 e.printStackTrace();
@@ -77,14 +86,14 @@ public class Fragment_Tastiera extends Fragment implements KeyboardView.OnKeyboa
     }
     @Override
     public void onPress(int primaryCode) {
-       playClick(primaryCode);
+        playClick(primaryCode);
         try {
             if (primaryCode == Keyboard.KEYCODE_SHIFT) {
                 capsLock=!capsLock;
                 keyboard.setShifted(capsLock);
                 keyboardView.invalidateAllKeys();
             } else {
-                invokerCommand.pressKey(primaryCode, capsLock);
+                receiverCommand.writeMediaKeyboard(primaryCode, capsLock);
             }
         }
         catch(Exception e){

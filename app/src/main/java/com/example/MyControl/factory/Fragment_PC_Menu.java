@@ -1,12 +1,12 @@
-package com.example.MyControl.factory;
+package com.example.mycontrol.factory;
 
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,31 +15,35 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.example.MyControl.R;
-import com.example.MyControl.command.InvokerCommand;
-import com.example.MyControl.command.ReceiverCommand;
-import com.example.MyControl.command.WriteCommand;
-import com.example.MyControl.facade.DoOperationMaker;
+import androidx.fragment.app.Fragment;
+import com.example.mycontrol.R;
+import com.example.mycontrol.action.ReceiverCommand;
+import com.example.mycontrol.action.ServiceFile;
+import com.example.mycontrol.action.ServiceNetwork;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Fragment_PC_Menu extends Fragment implements View.OnClickListener{
-    private InvokerCommand invokerCommand;
+
+    private ServiceNetwork serviceNetwork;
+    private ServiceFile serviceFile;
+    private ReceiverCommand receiverCommand;
     private TextView txtMouse;
-    private DoOperationMaker doOperationMaker;
     private int screen_width;
     private int screen_height;
     private Context context;
-    private DoOperationMaker doOperationMakerFile;
+    private Handler handler;
 
-    public Fragment_PC_Menu(Context context,int screen_height, int screen_width,DoOperationMaker doOperationMakerFile){
+    public Fragment_PC_Menu(Context context,int screen_height, int screen_width,ServiceFile serviceFile)throws IOException{
         this.screen_height=screen_height;
         this.screen_width=screen_width;
         this.context=context;
-        this.doOperationMakerFile=doOperationMakerFile;
+        this.serviceFile=serviceFile;
+        //serviceNetwork=new ServiceNetwork();
     }
 
     @Override
@@ -54,50 +58,62 @@ public class Fragment_PC_Menu extends Fragment implements View.OnClickListener{
             Button b=(Button)v;
             b.setOnClickListener(this);
         }
-        txtMouse.setOnClickListener(this);
-        ReceiverCommand receiverCommand=new ReceiverCommand();
-        WriteCommand writeCommand=new WriteCommand(receiverCommand);
-        invokerCommand=new InvokerCommand(writeCommand);
         container.setBackgroundColor(Color.WHITE);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        new HelpThreadActivity().execute();
+         /*
+        utile per gestire i processi in maniera asincrona. qui ne creiamo uno
+        */
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        //permette di inviare messaggi ad thread associato
+        handler = new Handler(Looper.getMainLooper());
+        executor.execute(new HelpThreadActivity());
         return rootView;
     }
 
-    private class HelpThreadActivity extends AsyncTask<Void,String,Void>{
+    private class HelpThreadActivity implements Runnable {
         @Override
-        protected Void doInBackground(Void... params) {
-            try{
-                String address = doOperationMakerFile.getTextElaborated("ADDRESS");
-                Socket socket=new Socket(address,8004);
-                invokerCommand.pressStartAll(socket);
-                doOperationMaker=new DoOperationMaker(socket);
-                doOperationMaker.startAllOperation();
-                String mess=doOperationMaker.getTextElaborated(null);
-                Log.d("messaggio da inviare",mess);
-                String [] value=new String[2];
-                value[0]=mess;
-                publishProgress(value);
-            }
-            catch (IOException e){
+        public void run() {
+            try {
+                Log.d("DEBUG","SONO NEL THREAD pc_menu");
+                serviceNetwork=new ServiceNetwork();
+                String address = serviceFile.readFile("ADDRESS");
+                Socket socket = new Socket(address, 8004);
+                serviceNetwork.setSocket(socket);
+                serviceNetwork.sendLocalAddress();
+                Log.d("DEBUG", "sono in fragment pc_menu Sto agganciato");
+                receiverCommand = new ReceiverCommand(serviceNetwork);
+                String value=serviceNetwork.readSocket();
+                handler.post(new UpdateGui(value));
+
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            return null;
-        }
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            txtMouse.setText("Connesso con "+ values[0]);
         }
     }
 
-    @Override
+
+    private class UpdateGui implements Runnable{
+        private String value;
+        private UpdateGui(String value){
+            this.value=value;
+        }
+        @Override
+        public void run() {
+            Log.d("DEBUG","SONO NEL THREAD UPDATE GUI");
+            if(value!=null) {
+                txtMouse.setText("Connesso con " + value);
+            }
+        }
+    }
+
+
     public void onClick(View v) {
         try {
-            invokerCommand.pressWritingActionPC(v);
+            receiverCommand.writeMediaPC(v);
         }
         catch (Exception e){
+            txtMouse.setText("Non Connesso");
             AlertDialog.Builder ac=new AlertDialog.Builder(v.getContext());
             ac.setTitle("Errore!");
             ac.setMessage("Impossibile connettersi al PC!");
@@ -110,9 +126,9 @@ public class Fragment_PC_Menu extends Fragment implements View.OnClickListener{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(doOperationMaker!=null){
+        if(serviceNetwork!=null){
             try{
-                doOperationMaker.finishAllOperation();
+                serviceNetwork.closeSocketStream();
             }
             catch (IOException e){
                 e.printStackTrace();

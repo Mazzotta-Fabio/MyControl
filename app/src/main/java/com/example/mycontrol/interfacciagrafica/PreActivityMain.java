@@ -1,4 +1,4 @@
-package com.example.MyControl.interfaccia_grafica;
+package com.example.mycontrol.interfacciagrafica;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,7 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
-import com.example.MyControl.R;
+import com.example.mycontrol.R;
 
 public class PreActivityMain extends Activity {
 
