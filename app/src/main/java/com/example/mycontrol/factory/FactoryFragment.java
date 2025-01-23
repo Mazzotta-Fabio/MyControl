@@ -34,10 +34,10 @@ public class FactoryFragment {
                 fragment = new Fragment_PC_Menu(activity,screen_height,screen_width,srv);
                 break;
             case 5:
-                fragment = new Fragment_Impostazioni(activity,srv);
+                fragment = new Fragment_File(activity,srv);
                 break;
             case 6:
-                fragment = new Fragment_File(activity,srv);
+                fragment = new Fragment_Impostazioni(activity,srv);
                 break;
         }
         return fragment;

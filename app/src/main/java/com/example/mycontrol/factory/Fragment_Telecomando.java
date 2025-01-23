@@ -71,16 +71,18 @@ public class Fragment_Telecomando extends Fragment implements View.OnClickListen
                 Log.d("DEBUG","SONO NEL THREAD TELECOMANDO");
                 serviceNetwork=new ServiceNetwork();
                 String address = serviceFile.readFile("ADDRESS");
+                Log.d("DEBUG","Valore di indirizzo "+address);
                 Socket socket = new Socket(address, 8004);
                 serviceNetwork.setSocket(socket);
                 serviceNetwork.sendLocalAddress();
                 Log.d("DEBUG", "sono in fragment Telecomando Sto agganciato");
                 receiverCommand = new ReceiverCommand(serviceNetwork);
                 String value=serviceNetwork.readSocket();
+                Log.d("DEBUG", "VALORE LETTO DAL SOCKET: "+value);
                 handler.post(new UpdateGui(value));
             } catch (IOException e) {
-                Log.d("DEBUG","SONO NELL'ECCEZIONE");
-                e.printStackTrace();
+                Log.d("DEBUG","SONO NELL'ECCEZIONE DEL TELECOMANDO");
+                Log.d("DEBUG", e.getMessage());
             }
 
         }
@@ -112,7 +114,7 @@ public class Fragment_Telecomando extends Fragment implements View.OnClickListen
             ac.setNeutralButton("Ok", null);
             ac.show();
             txtTelecomando.setText("Non Connesso");
-            e.printStackTrace();
+            Log.d("ERRORE",e.getMessage());
         }
     }
 

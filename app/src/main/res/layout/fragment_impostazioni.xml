@@ -76,7 +76,7 @@
                 android:layout_marginBottom="15dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
-                android:text="La funzionalità Stereo-MDP vale solo per Windows Media Player"
+                android:text="La funzionalità Stereo-MDP è operativa solo per siti di streaming"
                 android:textColor="#000000"
                 android:textSize="15dp" />
         </GridLayout>

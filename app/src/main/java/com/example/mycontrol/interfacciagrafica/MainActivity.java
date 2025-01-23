@@ -37,10 +37,10 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         try{
             serviceFile=new ServiceFile(this);
-            serviceFile.writeFile("ADDRESS","192.168.13.36");
+            serviceFile.writeFile("ADDRESS","192.168.96.241");
         }
         catch (IOException e){
-            e.printStackTrace();
+            Log.d("ERROR", e.getMessage());
         }
 
         //ottieni le componenti
@@ -58,13 +58,13 @@ public class MainActivity extends AppCompatActivity {
         list.add(new ItemSlideMenu(R.drawable.tastiera,"Tastiera"));
         list.add(new ItemSlideMenu(R.drawable.stereo,"Stereo_MP"));
         list.add(new ItemSlideMenu(R.drawable.pc,"Gestione_PC"));
-        //list.add(new ItemSlideMenu(R.drawable.file,"Carica File"));
+        list.add(new ItemSlideMenu(R.drawable.file,"Carica File"));
         list.add(new ItemSlideMenu(R.drawable.impost,"Impostazioni"));
         list.add(new ItemSlideMenu(R.drawable.logout,"Chiudi l'applicazione"));
         //settiamo il nostro adapter
         slidingMenuAdapter=new SlidingMenuAdapter(list,this);
         listViewsliding.setAdapter(slidingMenuAdapter);
-        lastTitle="Mouse";
+        lastTitle="Telecomando";
 
         //serve per mostare l'icona per far apparire il menu
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

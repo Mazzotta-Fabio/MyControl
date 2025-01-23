@@ -1,13 +1,14 @@
 package com.example.mycontrol.action;
 
+import com.example.mycontrol.R;
 import android.app.AlertDialog;
 import android.content.*;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.*;
 import android.widget.Button;
-import com.example.mycontrol.R;
 import java.io.IOException;
+
 
 /**
  * classe Receiver:porta avanti le operazioni richieste per poter essere eseguite
