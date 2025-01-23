@@ -58,8 +58,10 @@ public class ServiceNetwork {
         FileOutputStream fileOutputStream=new FileOutputStream(file);
         fileOutputStream.write(streamFile.toByteArray());
         String codificaFile=Base64.getEncoder().encodeToString(Files.readAllBytes(file.toPath()));
-        Log.d("DEBUG", "codifica file: "+codificaFile);
-        writer.println("invioFile "+file.getName().trim()+" "+codificaFile);
+        Log.d("DEBUG", "codifica file: "+codificaFile.trim());
+        //Log.d("DEBUG", "file senza spazi: "+file.getName().replaceAll("\\s+",""));
+        String codificaNomeFile=Base64.getEncoder().encodeToString(file.getName().getBytes());
+        writer.println("invioFile "+codificaNomeFile+" "+codificaFile);
         fileOutputStream.close();
     }
 
