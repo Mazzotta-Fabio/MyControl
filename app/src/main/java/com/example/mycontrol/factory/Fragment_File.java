@@ -92,7 +92,6 @@ public class Fragment_File extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.CaricaFile) {
-
             chooseItem="";
             //imposta alert
             AlertDialog.Builder ac = new AlertDialog.Builder(v.getContext());

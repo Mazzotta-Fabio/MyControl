@@ -4,6 +4,8 @@ import com.example.mycontrol.R;
 import android.app.AlertDialog;
 import android.content.*;
 import android.graphics.Point;
+import android.hardware.display.DisplayManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.widget.Button;
@@ -176,28 +178,17 @@ public class ReceiverCommand {
                             break;
                          */
                         case (MotionEvent.ACTION_MOVE):
-                            WindowManager wm=(WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-                            WindowMetrics windowMetrics=wm.getCurrentWindowMetrics();
-                            //Point point = new Point();
-                            //display.getSize(point);
-                            double x = initialX + (int) (e.getRawX() - initialTouchX);
-                            double y = initialY + (int) (e.getRawY() - initialTouchY);
-                            message = "mouseMuovi " + (initialX/windowMetrics.getBounds().height())*100 + " " + x + " " + (initialY/windowMetrics.getBounds().width())*100 + " " + y + " Muovi";
+                            DisplayManager dm = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
+                            //display principale
+                            Display display = dm.getDisplay(Display.DEFAULT_DISPLAY);
+                            Point point = new Point();
+                            display.getRealSize(point);
+                            float x = (e.getX() / point.x);
+                            float y = (e.getY() / point.y);
+                            message = "mouseMuovi " + x + " " + y + " Muovi";
+                            Log.d("DEBUG", "X:" + x + "Y:" + y);
                             break;
                     }
-                    /*
-                    WindowManager wm=(WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-                    Display display=wm.getDefaultDisplay();
-                    Point point = new Point();
-                    display.getSize(point);
-                    double x = e.getX()*point.x;
-                    double y = e.getY()*point.y;
-                    int pointerCount = e.getPointerCount();
-                    /*
-                    double x = e.getX();
-                    double y = e.getY();
-                    message = "mouseMuovi " + x + " " + y + " Muovi";
-                     */
                 }
             }
         }
@@ -216,10 +207,4 @@ public class ReceiverCommand {
             serviceNetwork.writeSocket(message);
         }
     }
-
-/*
-    public void setCommunication(Socket socket)throws IOException{
-        serviceMediaAdapter=ServiceMediaAdapter.createNetwork(socket);
-    }
-*/
 }
