@@ -43,7 +43,6 @@ public class Fragment_PC_Menu extends Fragment implements View.OnClickListener{
         this.screen_width=screen_width;
         this.context=context;
         this.serviceFile=serviceFile;
-        //serviceNetwork=new ServiceNetwork();
     }
 
     @Override

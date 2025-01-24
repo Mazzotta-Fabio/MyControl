@@ -92,7 +92,7 @@ public class Fragment_File extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.CaricaFile) {
-            nomiFile.removeAll(nomiFile);
+            chooseItem="";
             //imposta alert
             AlertDialog.Builder ac = new AlertDialog.Builder(v.getContext());
             ac.setTitle("Seleziona cosa vuoi inviare!");
@@ -141,8 +141,8 @@ public class Fragment_File extends Fragment implements View.OnClickListener {
                             Log.d("DEBUG", "SONO IN INVIAFILE sto leggendo file n° " + (i + 1));
                             //serviceNetwork.writeSocket("invioFile "+nomiFile.get(i));
                             File file = context.getFileStreamPath(getFileName(nomiFile.get(i)));
-                            Log.d("DEBUG","Sto leggendo il file: " +file.getName());
-                            serviceNetwork.writeStream(file,arrayStream.get(i));
+                            Log.d("DEBUG", "Sto leggendo il file: " + file.getName());
+                            serviceNetwork.writeStream(file, arrayStream.get(i));
                             //serviceNetwork.writeStream(context.openFileInput(getFileName(nomiFile.get(i))),getFileName(nomiFile.get(i)));
                         } catch (Exception e) {
                             flag = false;
@@ -163,10 +163,11 @@ public class Fragment_File extends Fragment implements View.OnClickListener {
                         ac.setNeutralButton("Ok", null);
                         ac.show();
                     }
-                    nomiFile.removeAll(nomiFile);
-                    txtNomeFile.setText("Nessun file selezionato");
                 }
             }
+            arrayStream.clear();
+            nomiFile.clear();
+            txtNomeFile.setText("Nessun file selezionato");
         }
     }
 
@@ -191,11 +192,10 @@ public class Fragment_File extends Fragment implements View.OnClickListener {
                 in.setType("*/*");
                 break;
         }
-        if (!(chooseItem.equals("Documenti"))) {
-            Log.d("DEBUG", "SONO QUII IN NON DOCUMENTI");
+        if(in!=null){
             in.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            someActivityResultLauncher.launch(in);
         }
-        someActivityResultLauncher.launch(in);
         Log.d("DEBUG", "SONO QUII HO FINITO");
     }
 
@@ -248,7 +248,6 @@ public class Fragment_File extends Fragment implements View.OnClickListener {
             etichetta = etichetta + getFileName(nomiFile.get(i)) + "\n";
         }
         txtNomeFile.setText(etichetta);
-        //nomiFile.removeAll(nomiFile);
     }
 
     private ByteArrayOutputStream readFileFromUri(Uri uri) {
